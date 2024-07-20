@@ -2,6 +2,7 @@
 mod tests;
 
 pub mod construct;
+pub mod prelude;
 
 use ultraviolet::Vec3;
 

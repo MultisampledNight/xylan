@@ -2,7 +2,7 @@
 use indoc::indoc;
 
 use crate::{
-    construct::{NewEdge, NewVertex},
+    prelude::*,
     Edge, Vertex,
 };
 
