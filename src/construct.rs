@@ -42,18 +42,18 @@ macro_rules! construct {
 
 construct! {
     NewVertex::vertex => Vertex : [
-        (f32, f32, f32) => |(x, y, z)| Self(Vec3::new(x, y, z)),
-        (f32, f32) => |(x, y)| (x, y, 0.0).vertex(),
-        (i32, i32, i32) => |(x, y, z)| (x as f32, y as f32, z as f32).vertex(),
-        (i32, i32) => |(x, y)| (x as f32, y as f32, 0.0).vertex(),
-
         [f32; 3] => |[x, y, z]| Self(Vec3::new(x, y, z)),
         [f32; 2] => |[x, y]| [x, y, 0.0].vertex(),
         [i32; 3] => |comp| comp.map(|c| c as f32).vertex(),
         [i32; 2] => |comp| comp.map(|c| c as f32).vertex(),
+
+        (f32, f32, f32) => |(x, y, z)| [x, y, z].vertex(),
+        (f32, f32) => |(x, y)| [x, y].vertex(),
+        (i32, i32, i32) => |(x, y, z)| [x, y, z].vertex(),
+        (i32, i32) => |(x, y)| [x, y].vertex(),
     ],
     NewEdge::edge => Edge : [
-        (Vertex, Vertex) => |(a, b)| Self { a, b },
         [Vertex; 2] => |[a, b]| Self { a, b },
+        (Vertex, Vertex) => |(a, b)| [a, b].edge(),
     ],
 }
