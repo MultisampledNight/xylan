@@ -1,26 +1,42 @@
-use ultraviolet::Vec3;
+#[allow(unused)]
+use indoc::indoc;
 
-use crate::{Along, Edge, Extrude, Fill, Plane, Vertex};
+use crate::{
+    construct::{NewEdge, NewVertex},
+    Edge, Vertex,
+};
 
 #[test]
-fn plane() {
-    let a = (0.0, 0.0, 0.0).fill();
-    let b = (1.0, 0.0, 0.0).fill();
+fn edge() {
+    let edge = (Vertex::from((0, 0)), (1, 0).vertex()).edge();
+    assert_eq!(
+        edge,
+        Edge {
+            a: Vertex((0.0, 0.0, 0.0).into()),
+            b: Vertex((1.0, 0.0, 0.0).into()),
+        }
+    );
+}
 
-    let c = (a, b).fill();
-    let plane = c.extrude(1.0, Along::Normal);
+/*
+#[test]
+fn future() {
+    let mut ctx = Context::new();
+
+    ((0, 0, 0).vertex(), (1, 0, 0).vertex())
+        .edge()
+        .extrude(Along::Axis(Y), 1)
+        .store(&mut ctx);
 
     assert_eq!(
-        plane,
-        Plane {
-            a: Edge {
-                a: Vertex(Vec3::new(0.0, 0.0, 0.0)),
-                b: Vertex(Vec3::new(1.0, 0.0, 0.0)),
-            },
-            b: Edge {
-                a: Vertex(Vec3::new(0.0, 1.0, 0.0)),
-                b: Vertex(Vec3::new(1.0, 1.0, 0.0)),
-            },
-        }
-    )
+        ctx.into_obj(),
+        indoc! {"
+            v 0.0 0.0 0.0
+            v 1.0 0.0 0.0
+            v 1.0 1.0 0.0
+            v 0.0 1.0 0.0
+            f 1 2 3 4
+        "},
+    );
 }
+*/
