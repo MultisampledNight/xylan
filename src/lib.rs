@@ -1,53 +1,62 @@
-use ordered_float::OrderedFloat;
+use ultraviolet::Vec3;
 
 #[cfg(test)]
 mod tests;
 
-pub type Scalar = OrderedFloat<f32>;
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Vertex(pub Vec3);
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Vector {
-    x: Scalar,
-    y: Scalar,
-    z: Scalar,
-}
-
-impl<L, C> From<L> for Vector
-where
-    L: Into<[C; 3]>,
-    C: Into<Scalar>,
-{
-    fn from(list: L) -> Self {
-        let [x, y, z] = list.into();
-        Self {
-            x: x.into(),
-            y: y.into(),
-            z: z.into(),
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Vertex(pub Vector);
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Edge {
     a: Vertex,
     b: Vertex,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+// TODO: need to account for ccw and cw somehow? maybe just store tris?
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Plane {
     a: Edge,
     b: Edge,
 }
 
-trait Fill<O> {
+pub trait Fill<O> {
     fn fill(self) -> O;
 }
 
-impl<C: Into<Scalar>> Fill<Vertex> for (C, C, C) {
+impl<C: Into<f32>> Fill<Vertex> for (C, C, C) {
     fn fill(self) -> Vertex {
-        Vertex(self.into())
+        let array: [C; 3] = self.into();
+        let concrete = array.map(Into::into);
+        Vertex(concrete.into())
+    }
+}
+
+impl Fill<Edge> for (Vertex, Vertex) {
+    fn fill(self) -> Edge {
+        let (a, b) = self;
+        Edge { a, b }
+    }
+}
+
+pub trait Extrude<O> {
+    fn extrude<C: Into<f32>>(self, amount: C, along: Along) -> O;
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Along {
+    // TODO: on edges, does that refer to the left-hand side or the right-hand side?
+    // kinda thinking we need an individual Along specifier for edges vs. faces...
+    Normal,
+}
+
+impl Extrude<Plane> for Edge {
+    fn extrude<C: Into<f32>>(self, amount: C, _along: Along) -> Plane {
+        // just rotate a → b vector by 90 deg counterclockwise
+        // then set length to amount
+        // add it to a + b
+        // boom
+        let a_to_b = self.b.0 - self.a.0;
+
+        todo!()
     }
 }
