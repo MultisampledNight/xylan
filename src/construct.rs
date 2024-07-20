@@ -1,6 +1,6 @@
 use ultraviolet::Vec3;
 
-use crate::{Edge, Vertex};
+use crate::{Edge, Triangle, Vertex};
 // TODO: there's no fundamental difference between NewX and From<...> for X lol
 
 // HACK: for some reason, using AsPrimitive as generic doesn't lead to the resolution of
@@ -55,5 +55,15 @@ construct! {
     NewEdge::edge => Edge : [
         [Vertex; 2] => |[a, b]| Self { a, b },
         (Vertex, Vertex) => |(a, b)| [a, b].edge(),
+    ],
+    NewTriangle::triangle => Triangle : [
+        (Edge, Vertex) => |(edge, vertex)| Self {
+            a: edge.a,
+            b: edge.b,
+            c: vertex,
+        },
+
+        [Vertex; 3] => |[a, b, c]| Self { a, b, c },
+        (Vertex, Vertex, Vertex) => |(a, b, c)| [a, b, c].triangle(),
     ],
 }

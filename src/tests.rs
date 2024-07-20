@@ -1,10 +1,7 @@
 #[allow(unused)]
 use indoc::indoc;
 
-use crate::{
-    prelude::*,
-    Edge, Vertex,
-};
+use crate::{prelude::*, Edge, Vertex};
 
 #[test]
 fn edge() {
