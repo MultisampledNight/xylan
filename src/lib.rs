@@ -1,4 +1,4 @@
-use ultraviolet::Vec3;
+use ultraviolet::{Rotor3, Vec3};
 
 #[cfg(test)]
 mod tests;
@@ -44,19 +44,32 @@ pub trait Extrude<O> {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Along {
-    // TODO: on edges, does that refer to the left-hand side or the right-hand side?
-    // kinda thinking we need an individual Along specifier for edges vs. faces...
+    // TODO: on edges, to which one of the infinite amount of normals does this refer to?
     Normal,
 }
 
 impl Extrude<Plane> for Edge {
     fn extrude<C: Into<f32>>(self, amount: C, _along: Along) -> Plane {
-        // just rotate a → b vector by 90 deg counterclockwise
+        // TODO: this doesn't make sense from any perspective, it is far too naive
+        // just rotate a → b vector by 90 deg counterclockwise (assuming on the z plane for now)
         // then set length to amount
         // add it to a + b
         // boom
         let a_to_b = self.b.0 - self.a.0;
+        let rotation = Rotor3::from_rotation_between(Vec3::unit_x(), Vec3::unit_y());
+        let mut normal = rotation * a_to_b;
+        normal.normalize();
 
-        todo!()
+        let extrusion = normal * amount.into();
+
+        let opposite = Self {
+            a: Vertex(self.a.0 + extrusion),
+            b: Vertex(self.b.0 + extrusion),
+        };
+
+        Plane {
+            a: self,
+            b: opposite,
+        }
     }
 }
