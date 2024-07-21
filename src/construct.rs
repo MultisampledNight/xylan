@@ -71,12 +71,15 @@ construct! {
 impl Triangle {
     /// Constructs a triangle while reordering the vertices to fit the struct's description.
     pub fn new(mut vertices: [Vertex; 3]) -> Self {
-        let key = |vert: &Vertex| [
-            vert.0.z.atan2(vert.0.y),
-            vert.0.x.atan2(vert.0.y),
-            // serves as a tie-breaker in case of same angle
-            vert.0.mag_sq(),
-        ].map(OrderedFloat);
+        let key = |vert: &Vertex| {
+            [
+                vert.0.z.atan2(vert.0.y),
+                vert.0.x.atan2(vert.0.y),
+                // serves as a tie-breaker in case of same angle
+                vert.0.mag_sq(),
+            ]
+            .map(OrderedFloat)
+        };
         vertices.sort_unstable_by_key(key);
 
         let [a, b, c] = vertices;

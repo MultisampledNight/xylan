@@ -21,6 +21,7 @@ pub mod prelude;
 use std::iter;
 
 use construct::NewEdge;
+use itertools::Itertools;
 use ultraviolet::Vec3;
 
 pub struct Context;
@@ -89,11 +90,10 @@ impl Meshish for Triangle {
     }
 
     fn edges(self) -> impl IntoIterator<Item = Edge> {
-        vec![
-            (self.a, self.b).edge(),
-            (self.b, self.c).edge(),
-            (self.c, self.a).edge(),
-        ]
+        self.vertices()
+            .into_iter()
+            .combinations(2)
+            .map(|pair| (pair[0], pair[1]).edge())
     }
 
     fn tris(self) -> impl IntoIterator<Item = Self> {
