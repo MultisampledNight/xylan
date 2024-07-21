@@ -1,14 +1,15 @@
-/// # Assumptions
-///
-/// The library is thought to work like Blender,
-/// but used programmatically from Rust.
-/// Hence, the assumptions are similar to Blender:
-///
-/// - Triangles store their vertices in counter-clockwise order.
-/// - For checking counter-clockwiseness, the coordinate system is:
-///     - `x+` to the camera
-///     - `y+` right-hand
-///     - `z+` up
+//! # Assumptions
+//!
+//! The library is thought to work like Blender,
+//! but used programmatically from Rust.
+//! Hence, the assumptions are similar to Blender:
+//!
+//! - Triangles store their vertices in counter-clockwise order.
+//! - For checking counter-clockwiseness,
+//!     the coordinate system is *left-handed*:
+//!     - `x+` to the camera
+//!     - `y+` right-hand
+//!     - `z+` up
 
 #[cfg(test)]
 mod tests;
