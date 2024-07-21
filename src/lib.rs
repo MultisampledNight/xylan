@@ -1,3 +1,15 @@
+/// # Assumptions
+///
+/// The library is thought to work like Blender,
+/// but used programmatically from Rust.
+/// Hence, the assumptions are similar to Blender:
+///
+/// - Triangles store their vertices in counter-clockwise order.
+/// - For checking counter-clockwiseness, the coordinate system is:
+///     - `x+` to the camera
+///     - `y+` right-hand
+///     - `z+` up
+
 #[cfg(test)]
 mod tests;
 
@@ -12,21 +24,28 @@ use ultraviolet::Vec3;
 
 pub struct Context;
 
+/// Point somewhere in space.
 #[derive(Clone, Copy, Debug, PartialEq)]
+#[repr(transparent)]
 pub struct Vertex(pub Vec3);
 
+/// Connection between 2 points.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Edge {
     pub a: Vertex,
     pub b: Vertex,
 }
 
-// TODO: enforce ccw
+/// Spans some surface between 3 points.
+///
+/// Guranteed to store its vertices in counter-clockwise order.
+/// 2 triangles are the same if they contain the same points,
+/// regardless of construction order.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Triangle {
-    pub a: Vertex,
-    pub b: Vertex,
-    pub c: Vertex,
+    a: Vertex,
+    b: Vertex,
+    c: Vertex,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -63,6 +82,7 @@ impl Meshish for Edge {
 }
 
 impl Meshish for Triangle {
+    /// Note: Vertices are guaranteed to be returned in counter-clockwise order.
     fn vertices(self) -> impl IntoIterator<Item = Vertex> {
         vec![self.a, self.b, self.c]
     }

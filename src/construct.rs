@@ -1,3 +1,4 @@
+use ordered_float::OrderedFloat;
 use ultraviolet::Vec3;
 
 use crate::{Edge, Triangle, Vertex};
@@ -57,13 +58,28 @@ construct! {
         (Vertex, Vertex) => |(a, b)| [a, b].edge(),
     ],
     NewTriangle::triangle => Triangle : [
-        (Edge, Vertex) => |(edge, vertex)| Self {
-            a: edge.a,
-            b: edge.b,
-            c: vertex,
-        },
-
-        [Vertex; 3] => |[a, b, c]| Self { a, b, c },
+        [Vertex; 3] => |vertices| Self::new(vertices),
         (Vertex, Vertex, Vertex) => |(a, b, c)| [a, b, c].triangle(),
+        (Edge, Vertex) => |(edge, vertex)| [
+            edge.a,
+            edge.b,
+            vertex,
+        ].triangle(),
     ],
+}
+
+impl Triangle {
+    /// Constructs a triangle while reordering the vertices to fit the struct's description.
+    pub fn new(mut vertices: [Vertex; 3]) -> Self {
+        let key = |vert: &Vertex| [
+            vert.0.z.atan2(vert.0.y),
+            vert.0.x.atan2(vert.0.y),
+            // serves as a tie-breaker in case of same angle
+            vert.0.mag_sq(),
+        ].map(OrderedFloat);
+        vertices.sort_unstable_by_key(key);
+
+        let [a, b, c] = vertices;
+        Self { a, b, c }
+    }
 }
